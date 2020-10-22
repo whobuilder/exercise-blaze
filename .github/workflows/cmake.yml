@@ -22,7 +22,10 @@ jobs:
       with:
         repository: fmtlib/fmt
         path: fmt
-
+    - name: debug github workspace directory
+      shell: bash
+      working-directory: $GITHUB_WORKSPACE
+      run: pwd; ls -l
     - name: create fmt build environment
       run: cmake -E make_directory $GITHUB_WORKSPACE/fmt/build
 
