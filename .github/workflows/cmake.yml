@@ -22,14 +22,17 @@ jobs:
       with:
         repository: fmtlib/fmt
         path: fmt
+
     - name: create fmt build environment
-      run: cmake -E make_directory ${{runner.workspace}}/fmt/build
+      run: cmake -E make_directory ${{GITHUB_WORKSPACE}}/fmt/build
+
     - name: Configure fmt cmake
       shell: bash
-      working-directory: ${{runner.workspace}}/fmt/build
+      working-directory: ${{GITHUB_WORKSPACE}}/fmt/build
       run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
     - name: build fmt
-      working-directory: ${{runner.workspace}}/fmt/build
+      working-directory: ${{GITHUB_WORKSPACE}}/fmt/build
       run: make install
 
     - name: Create Build Environment
