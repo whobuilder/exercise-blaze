@@ -39,8 +39,11 @@ jobs:
             -B ${{ runner.workspace }}/blaze-build
             -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
             -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party)
-        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/blaze-build)
-        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/blaze-build)
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/blaze-build RESULT_VARIABLE result)
+        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/blaze-build RESULT_VARIABLE result)
+        if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+        endif()
       working-directory: ${{ runner.workspace }}
 
     - name: install fmt
@@ -53,18 +56,13 @@ jobs:
             -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
             -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party 
             -D FMT_TEST=OFF)
-        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/fmt-build)
-        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/fmt-build)
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/fmt-build RESULT_VARIABLE result)
+        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/fmt-build RESULT_VARIABLE result)
+        if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+        endif()
 
-#    - name: Configure fmt cmake
-#      shell: bash
-#      working-directory: ${{ runner.workspace }}/fmt/build
-#      run: cmake ${{ github.workspace }}/fmt -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party -DFMT_TEST=OFF
-#
-#    - name: build fmt
-#      working-directory: ${{ runner.workspace }}/fmt/build
-#      run: cmake --build . && cmake --install .
-#
+
 #    - name: Create Build Environment
 #      # Some projects don't allow in-source building, so create a separate build directory
 #      # We'll use this as our working directory for all subsequent commands
