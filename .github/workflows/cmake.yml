@@ -41,7 +41,7 @@ jobs:
       run: cmake ${{ github.workspace }}/fmt -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party -DFMT_TEST=OFF
 
     - name: build fmt
-      working-directory: ${{ github.workspace }}/fmt/build
+      working-directory: ${{ runner.workspace }}/fmt/build
       run: cmake --build .
 
 #    - name: Create Build Environment
