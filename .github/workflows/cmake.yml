@@ -63,26 +63,26 @@ jobs:
         endif()
       working-directory: ${{ runner.workspace }}
 
-     - name: configure exercise blaze
-       shell: cmake -P {0}
-       run: |
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/build)
-        execute_process(COMMAND ${CMAKE_COMMAND} 
-            -S ${{ github.workspace }}
-            -B ${{ runner.workspace }}/build
-            -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }})
-        if (NOT result EQUAL 0)
-            message(FATAL_ERROR "Bad exit status")
-        endif()
-       working-directory: ${{ runner.workspace }}
-     - name: build exercise-blaze   
-       shell: cmake -P {0}
-       run: |
-        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/build RESULT_VARIABLE result)
-        if (NOT result EQUAL 0)
-            message(FATAL_ERROR "Bad exit status")
-        endif()
-       working-directory: ${{ runner.workspace }}
+    - name: configure exercise blaze
+      shell: cmake -P {0}
+      run: |
+       execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/build)
+       execute_process(COMMAND ${CMAKE_COMMAND} 
+           -S ${{ github.workspace }}
+           -B ${{ runner.workspace }}/build
+           -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }})
+       if (NOT result EQUAL 0)
+           message(FATAL_ERROR "Bad exit status")
+       endif()
+      working-directory: ${{ runner.workspace }}
+    - name: build exercise-blaze   
+      shell: cmake -P {0}
+      run: |
+       execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/build RESULT_VARIABLE result)
+       if (NOT result EQUAL 0)
+           message(FATAL_ERROR "Bad exit status")
+       endif()
+      working-directory: ${{ runner.workspace }}
 
 #    - name: Create Build Environment
 #      # Some projects don't allow in-source building, so create a separate build directory
