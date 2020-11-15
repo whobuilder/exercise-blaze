@@ -85,7 +85,7 @@ jobs:
        endif()
       working-directory: ${{ runner.workspace }}
     - name: run exercise-blaze
-      shell: ./firstExample
+      run: ./firstExample
       working-directory: ${{ runner.workspace }}/build
 
 
