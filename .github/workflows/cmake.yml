@@ -43,12 +43,13 @@ jobs:
         execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/blaze-build)
       working-directory: ${{ runner.workspace }}
 
-    - name: create fmt build environment
+    - name: install fmt
       shell: cmake -P {0}
       run: | 
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/fmt-build)
         execute_process(COMMAND ${CMAKE_COMMAND} 
             -S ${{ github.workspace }}/fmt
+            -B ${{ runner.workspace }}/fmt-build
             -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
             -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party 
             -D FMT_TEST=OFF)
