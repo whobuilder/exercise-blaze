@@ -61,7 +61,7 @@ jobs:
         if (NOT result EQUAL 0)
             message(FATAL_ERROR "Bad exit status")
         endif()
-       working-directory: ${{ runner.workspace }}
+      working-directory: ${{ runner.workspace }}
 
      - name: configure exercise blaze
        shell: cmake -P {0}
