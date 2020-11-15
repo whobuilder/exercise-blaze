@@ -5,7 +5,6 @@ on: [push]
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-
 jobs:
   build:
     # The CMake configure and build commands are platform agnostic and should work equally
@@ -22,14 +21,29 @@ jobs:
       with:
         repository: fmtlib/fmt
         path: fmt
-    - name: debug github workspace directory
-      shell: bash
-      working-directory: ${{ github.workspace }}
-      run: pwd; ls -l
+    - name: install blaze
+      shell: cmake -P {0}
+      run: |
+        file(DOWNLOAD "https://bitbucket.org/blaze-lib/blaze/downloads/blaze-3.8.tar.gz" ./blaze.zip SHOW_PROGRESS)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./blaze.zip)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/blaze-build)
+        execute_process(COMMAND ${CMAKE_COMMAND} 
+            -S ${{ runner.workspace }}/blaze-3.8
+            -B ${{ runner.workpsace }}/blade-build
+            -D CMAKE_BUILD_TYPE=$BUILDTYPE
+            -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party)
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/blaze-build)
+        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/blaze-build)
+      working-directory: ${{ runner.workspace }}
 
     - name: create third party libraries install dir
       shell: bash
       run: cmake -E make_directory ${{ runner.workspace }}/third_party
+
+    - name: debug github workspace directory
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: pwd; ls -l
 
     - name: create fmt build environment
       shell: bash
