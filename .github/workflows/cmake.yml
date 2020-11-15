@@ -12,7 +12,14 @@ jobs:
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        - {
+            name: "Ubuntu Latest",
+            os: ubuntu-latest
+            build_type: "Release", cc: "gcc", cxx: "g++"
+        }
     steps:
     - uses: actions/checkout@v2
 
@@ -24,6 +31,8 @@ jobs:
     - name: install blaze
       shell: cmake -P {0}
       run: |
+        set(ENV{CC} ${{ matrix.config.cc }})
+        set(ENV{CXX} ${{ matrix.config.cxx }})
         file(DOWNLOAD "https://bitbucket.org/blaze-lib/blaze/downloads/blaze-3.8.tar.gz" ./blaze.zip SHOW_PROGRESS)
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./blaze.zip)
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/blaze-build)
