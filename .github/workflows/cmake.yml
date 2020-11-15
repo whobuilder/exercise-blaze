@@ -15,11 +15,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        config:
         - {
             name: "Ubuntu Latest",
             os: ubuntu-latest,
             build_type: "Release", cc: "gcc", cxx: "g++"
-        }
+          }
     steps:
     - uses: actions/checkout@v2
 
