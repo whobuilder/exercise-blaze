@@ -39,7 +39,7 @@ jobs:
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/blaze-build)
         execute_process(COMMAND ${CMAKE_COMMAND} 
             -S ${{ runner.workspace }}/blaze-3.8
-            -B ${{ runner.workpsace }}/blade-build
+            -B ${{ runner.workpsace }}/blaze-build
             -D CMAKE_BUILD_TYPE=$BUILDTYPE
             -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party)
         execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/blaze-build)
