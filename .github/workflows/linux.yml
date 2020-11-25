@@ -58,10 +58,11 @@ jobs:
             -S ${{ github.workspace }}/Catch2
             -B ${{ runner.workspace }}/catch-build
             -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
-            -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party)
+            -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party
             -D CATCH_BUILD_TESTING=OFF
             -D CATCH_INSTALL_DOCS=OFF
             -D BUILD_TESTING=OFF
+        )
         execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/catch-build RESULT_VARIABLE result)
         execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/catch-build RESULT_VARIABLE result)
         if (NOT result EQUAL 0)
