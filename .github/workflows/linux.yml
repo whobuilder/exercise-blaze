@@ -32,7 +32,7 @@ jobs:
       with:
         repository: catchorg/Catch2
         path: Catch2
-      run: git checkout tags/v2.13.3
+        ref: tags/v2.13.3
 
     - name: install blaze
       shell: cmake -P {0}
