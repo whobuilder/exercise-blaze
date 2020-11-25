@@ -26,11 +26,14 @@ jobs:
       with:
         repository: fmtlib/fmt
         path: fmt
+
     - name: checkout Catch2
       uses: actions/checkout@v2
       with:
         repository: catchorg/Catch2
         path: Catch2
+      run: git checkout tags/v2.13.3
+
     - name: install blaze
       shell: cmake -P {0}
       run: |
