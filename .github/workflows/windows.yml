@@ -33,9 +33,15 @@ jobs:
         repository: fmtlib/fmt
         path: fmt
 
-    - name: install blaze
-      run: vcpkg install blaze --triplet=x64-windows
-      working-directory: ${{ env.VCPKG_INSTALLATION_ROOT }}
+    - name: Restore artifacts, or run vcpkg, build and cache artifacts
+      uses: lukka/run-vcpkg@main
+      id: runvcpkg
+      with:
+        vcpkgArguments: 'blaze'
+        vcpkgTriplet: 'x64-windows'
+        vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
+        vcpkgGitCommitId: '38d2893b30d4d4b3c09485216ecf4f6e8ef35d88'
+
 
     - name: install catch2
       shell: cmake -P {0}
@@ -84,7 +90,7 @@ jobs:
            -S ${{ github.workspace }}
            -B ${{ runner.workspace }}/build
            -D CMAKE_PREFIX_PATH=${{ runner.workspace }}/third_party
-           -D CMAKE_TOOLCHAIN_FILE=${{env.VCPKG_INSTALLATION_ROOT}}/scripts/buildsystems/vcpkg.cmake
+           -D CMAKE_TOOLCHAIN_FILE=${{ runner.workspace }}/b/vcpkg/scripts/buildsystems/vcpkg.cmake
            -A ${{matrix.platform}}
            -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} RESULT_VARIABLE result)
        if (NOT result EQUAL 0)
