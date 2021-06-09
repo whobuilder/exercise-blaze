@@ -7,8 +7,7 @@ endif()
 
 find_library(LAPACK_LIBRARIES lapack)
 find_library(BLAS_LIBRARIES openblas)
-message(STATUS "Blas libraries:
-${BLAS_LIBRARIES}")
+message(STATUS "Blas libraries: ${BLAS_LIBRARIES}")
 target_link_libraries(
   blazeHelper
   PRIVATE project_options
