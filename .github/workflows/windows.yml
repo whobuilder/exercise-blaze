@@ -106,9 +106,6 @@ jobs:
            message(FATAL_ERROR "Bad exit status")
        endif()
       working-directory: ${{ runner.workspace }}
-    - name: run exercise-blaze
-      run: blazeApp
-      working-directory: ${{ runner.workspace }}/build/app
     
     - name: Test
       working-directory: ${{runner.workspace}}/build
