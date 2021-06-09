@@ -107,8 +107,8 @@ jobs:
        endif()
       working-directory: ${{ runner.workspace }}
     - name: run exercise-blaze
-      run: ./app/blazeApp
-      working-directory: ${{ runner.workspace }}/build
+      run: blazeApp
+      working-directory: ${{ runner.workspace }}/build/app
     
     - name: Test
       working-directory: ${{runner.workspace}}/build
