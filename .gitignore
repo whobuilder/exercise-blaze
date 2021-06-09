@@ -1,4 +1,7 @@
 .vs
 .vscode
-build
+.build-tips
+.clangd
 CMakeSettings.json
+compile_commands.json
+build

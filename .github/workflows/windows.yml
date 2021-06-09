@@ -1,0 +1,115 @@
+name: Windows
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+      build:
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+          build_type: [Debug, Release]
+          os: [windows-latest]
+          platform: [x64]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: checkout Catch2
+      uses: actions/checkout@v2
+      with:
+        repository: catchorg/Catch2
+        path: Catch2
+    - name: checkout Catch2 tag v2.13.3
+      run: git fetch --prune --unshallow && git checkout tags/v2.13.3
+      working-directory: ${{ github.workspace }}/Catch2
+
+    - name: checkout fmt
+      uses: actions/checkout@v2
+      with:
+        repository: fmtlib/fmt
+        path: fmt
+
+    - name: install blaze
+      shell: vcpkg install blaze --triplet=x64-windows
+      working-directory: ${{ env.VCPKG_INSTALLATION_ROOT }}
+
+    - name: install catch2
+      shell: cmake -P {0}
+      run: |
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/catch-build)
+        execute_process(COMMAND ${CMAKE_COMMAND} 
+            -S ${{ github.workspace }}/Catch2
+            -B ${{ runner.workspace }}/catch-build
+            -D CMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party
+            -D CATCH_BUILD_TESTING=OFF
+            -D CATCH_INSTALL_DOCS=OFF
+            -D BUILD_TESTING=OFF
+            -A ${{matrix.platform}}
+        )
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/catch-build  --config ${{matrix.build_type}} RESULT_VARIABLE result)
+        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/catch-build  --config ${{matrix.build_type}} RESULT_VARIABLE result)
+        if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+        endif()
+      working-directory: ${{ runner.workspace }}
+        
+    - name: install fmt
+      shell: cmake -P {0}
+      run: | 
+        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/fmt-build)
+        execute_process(COMMAND ${CMAKE_COMMAND} 
+            -S ${{ github.workspace }}/fmt
+            -B ${{ runner.workspace }}/fmt-build
+            -D CMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            -D CMAKE_INSTALL_PREFIX=${{ runner.workspace }}/third_party 
+            -D FMT_TEST=OFF
+            -A ${{matrix.platform}}
+            )
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/fmt-build  --config ${{matrix.build_type}} RESULT_VARIABLE result)
+        execute_process(COMMAND ${CMAKE_COMMAND} --install ${{ runner.workspace }}/fmt-build  --config ${{matrix.build_type}} RESULT_VARIABLE result)
+        if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+        endif()
+      working-directory: ${{ runner.workspace }}
+
+    - name: configure exercise blaze
+      shell: cmake -P {0}
+      run: |
+       execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/build)
+       execute_process(COMMAND ${CMAKE_COMMAND} 
+           -S ${{ github.workspace }}
+           -B ${{ runner.workspace }}/build
+           -D CMAKE_PREFIX_PATH=${{ runner.workspace }}/third_party
+           -A ${{matrix.platform}}
+           -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} RESULT_VARIABLE result)
+       if (NOT result EQUAL 0)
+           message(FATAL_ERROR "Bad exit status")
+       endif()
+      working-directory: ${{ runner.workspace }}
+    - name: build exercise-blaze   
+      shell: cmake -P {0}
+      run: |
+       execute_process(COMMAND ${CMAKE_COMMAND} --build ${{ runner.workspace }}/build  --config ${{matrix.build_type}} RESULT_VARIABLE result)
+       if (NOT result EQUAL 0)
+           message(FATAL_ERROR "Bad exit status")
+       endif()
+      working-directory: ${{ runner.workspace }}
+    - name: run exercise-blaze
+      run: ./app/blazeApp
+      working-directory: ${{ runner.workspace }}/build
+    
+    - name: Test
+      working-directory: ${{runner.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{matrix.build_type}} -V
