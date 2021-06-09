@@ -34,7 +34,7 @@ jobs:
         path: fmt
 
     - name: install blaze
-      shell: vcpkg install blaze --triplet=x64-windows
+      run: vcpkg install blaze --triplet=x64-windows
       working-directory: ${{ env.VCPKG_INSTALLATION_ROOT }}
 
     - name: install catch2
