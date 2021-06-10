@@ -95,18 +95,18 @@ jobs:
           ${{ runner.workspace }}/third_party/lib/fmtd.lib
         key: ${{ runner.os }}-fmtd-lib
     - name: checkout fmt
-      if: steps.cache-fmt.outputs.cache-hit != 'true'
+      if: steps.cache-fmt.outputs.cache-hit != 'true' || (steps.cache-fmt-lib.outputs.cache-hit != 'true' && steps.cache-fmtd-lib.outputs.cache-hit != 'true')
       uses: actions/checkout@v2
       with:
         repository: fmtlib/fmt
         path: fmt
     - name: checkout fmt tag 7.1.3
-      if: steps.cache-fmt.outputs.cache-hit != 'true'
+      if: steps.cache-fmt.outputs.cache-hit != 'true' || (steps.cache-fmt-lib.outputs.cache-hit != 'true' && steps.cache-fmtd-lib.outputs.cache-hit != 'true')
       run: git fetch --prune --unshallow && git checkout tags/7.1.3
       working-directory: ${{ github.workspace }}/fmt
 
     - name: install fmt
-      if: steps.cache-fmt.outputs.cache-hit != 'true'
+      if: steps.cache-fmt.outputs.cache-hit != 'true' || (steps.cache-fmt-lib.outputs.cache-hit != 'true' && steps.cache-fmtd-lib.outputs.cache-hit != 'true')
       shell: cmake -P {0}
       run: | 
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/fmt-build)
