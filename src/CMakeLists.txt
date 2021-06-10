@@ -6,7 +6,7 @@ if(FORTRAN_LINK_DIRECTORIES)
 endif()
 
 find_library(LAPACK_LIBRARIES lapack)
-find_library(BLAS_LIBRARIES openblas)
+find_library(BLAS_LIBRARIES blas)
 message(STATUS "Blas libraries: ${BLAS_LIBRARIES}")
 target_link_libraries(
   blazeHelper
