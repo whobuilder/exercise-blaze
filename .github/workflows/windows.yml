@@ -69,18 +69,29 @@ jobs:
         endif()
       working-directory: ${{ runner.workspace }}
 
-    
+    - name: cache fmt
+      id: cache-fmt
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ runner.workspace }}/third_party/include/fmt
+          ${{ runner.workspace }}/third_party/lib/cmake/fmt
+          ${{ runner.workspace }}/third_partylib/pkgconfig/fmt.pc
+        key: ${{ runner.os }}-fmt
+
     - name: checkout fmt
+      if: steps.cache-fmt.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
       with:
         repository: fmtlib/fmt
         path: fmt
+    - name: checkout fmt tag 7.1.3
+      if: steps.cache-fmt.outputs.cache-hit != 'true'
+      run: git fetch --prune --unshallow && git checkout tags/7.1.3
+      working-directory: ${{ github.workspace }}/fmt
 
-    
-
-
-    
     - name: install fmt
+      if: steps.cache-fmt.outputs.cache-hit != 'true'
       shell: cmake -P {0}
       run: | 
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/fmt-build)
