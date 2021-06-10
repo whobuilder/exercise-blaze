@@ -86,7 +86,7 @@ jobs:
         path: |
           ${{ runner.workspace }}/third_party/lib/fmt.lib
         key: ${{ runner.os }}-fmt-lib
-    - name: cache fmt lib
+    - name: cache fmtd lib
       if: ${{matrix.build_type}} == Debug
       id: cache-fmtd-lib
       uses: actions/cache@v2
