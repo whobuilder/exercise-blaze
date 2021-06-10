@@ -18,21 +18,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: checkout Catch2
-      uses: actions/checkout@v2
-      with:
-        repository: catchorg/Catch2
-        path: Catch2
-    - name: checkout Catch2 tag v2.13.3
-      run: git fetch --prune --unshallow && git checkout tags/v2.13.3
-      working-directory: ${{ github.workspace }}/Catch2
-
-    - name: checkout fmt
-      uses: actions/checkout@v2
-      with:
-        repository: fmtlib/fmt
-        path: fmt
-
     - name: Restore artifacts, or run vcpkg, build and cache artifacts
       uses: lukka/run-vcpkg@main
       id: runvcpkg
@@ -41,9 +26,29 @@ jobs:
         vcpkgTriplet: 'x64-windows'
         vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
         vcpkgGitCommitId: '38d2893b30d4d4b3c09485216ecf4f6e8ef35d88'
-
+    - name: cache catch2
+      id: cache-catch2
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ runner.workspace }}/third_party/include/catch2
+          ${{ runner.workspace }}/third_party/lib/cmake/Catch2
+          ${{ runner.workspace }}/third_party/share/Catch2
+          ${{ runner.workspace }}/third_party/share/pkgconfig/catch2.pc
+        key: ${{ runner.os }}-catch2
+    - name: checkout Catch2
+      if: steps.cache-catch2.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        repository: catchorg/Catch2
+        path: Catch2
+    - name: checkout Catch2 tag v2.13.3
+      if: steps.cache-catch2.outputs.cache-hit != 'true'
+      run: git fetch --prune --unshallow && git checkout tags/v2.13.3
+      working-directory: ${{ github.workspace }}/Catch2
 
     - name: install catch2
+      if: steps.cache-catch2.outputs.cache-hit != 'true'
       shell: cmake -P {0}
       run: |
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${{ runner.workspace }}/catch-build)
@@ -64,6 +69,17 @@ jobs:
         endif()
       working-directory: ${{ runner.workspace }}
 
+    
+    - name: checkout fmt
+      uses: actions/checkout@v2
+      with:
+        repository: fmtlib/fmt
+        path: fmt
+
+    
+
+
+    
     - name: install fmt
       shell: cmake -P {0}
       run: | 
